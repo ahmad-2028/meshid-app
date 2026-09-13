@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+    <meta name="description" content="Mesh ID — ইনভয়েস ও ধন্যবাদ পত্র তৈরির সহজ অ্যাপ। Create, customize and store invoices & thank you letters." />
+    <title id="pageTitle">Mesh ID</title>
+    <style>
+        /* ---------- RESET & BASE ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5fbfd;
+            --card-bg: #ffffff;
+            --primary: #0891b2;
+            --primary-dark: #0e7490;
+            --primary-light: #ecfeff;
+            --text: #0f2b33;
+            --text-muted: #6b7280;
+            --border: #e2e8f0;
+            --shadow: 0 20px 60px rgba(8, 145, 178, 0.14);
+            --radius: 24px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(8, 145, 178, 0.35);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 16px 40px rgba(8, 145, 178, 0.45);
+        }
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(8, 145, 178, 0.1);
+        }
+
+        .btn-large {
+            padding: 18px 44px;
+            font-size: 1.1rem;
+        }
+
+        /* ---------- ANIMATED BACKGROUND BLOBS ---------- */
+        .hero-blobs {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.25;
+            animation: floatBlob 20s ease-in-out infinite;
+        }
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: #0891b2;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+        .blob-2 {
+            width: 300px;
+            height: 300px;
+            background: #14b8a6;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -5s;
+        }
+        .blob-3 {
+            width: 250px;
+            height: 250px;
+            background: #6366f1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -40px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(40px, 30px) scale(1.05); }
+        }
+
+        /* ---------- NAV ---------- */
+        .navbar {
+            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        .logo span {
+            color: var(--primary);
+        }
+
+        .lang-group {
+            display: flex;
+            gap: 8px;
+            background: var(--bg);
+            padding: 4px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .lang-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 32px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            touch-action: manipulation;
+        }
+        .lang-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
+        }
+        .lang-btn:hover:not(.active) {
+            color: var(--text);
+            transform: scale(1.05);
+        }
+        .lang-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ---------- HERO ---------- */
+        .hero {
+            padding: 60px 0 80px;
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-anim {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        .hero-anim-delay-1 { animation-delay: 0.2s; }
+        .hero-anim-delay-2 { animation-delay: 0.4s; }
+        .hero-anim-delay-3 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(8, 145, 178, 0.2); }
+            50% { box-shadow: 0 0 0 12px rgba(8, 145, 178, 0); }
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+        .hero h1 span {
+            color: var(--primary);
+            display: inline-block;
+        }
+
+        .hero p.sub {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 480px;
+            margin-bottom: 28px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        /* ---------- MOCKUP ---------- */
+        .mockup-wrapper {
+            display: flex;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        .phone-mockup {
+            width: 320px;
+            height: 620px;
+            background: #0f2b33;
+            border-radius: 44px;
+            padding: 14px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.18), 0 0 0 8px #e2e8f0;
+            animation: floatPhone 6s ease-in-out infinite;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .phone-mockup:hover {
+            transform: rotateY(-5deg) rotateX(5deg) scale(1.02);
+        }
+
+        @keyframes floatPhone {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 32px;
+            overflow: hidden;
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f3f5;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .app-header-bar .app-name {
+            color: var(--primary);
+        }
+        .app-header-bar .app-sub {
+            font-size: 0.7rem;
+            color: #6b7280;
+        }
+
+        .balance-box {
+            background: linear-gradient(135deg, #0891b2, #6366f1);
+            color: #fff;
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin: 14px 0 16px;
+            animation: gradientMove 4s ease-in-out infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .balance-box .balance-label {
+            opacity: 0.8;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+        }
+        .balance-box .amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .balance-box .doc-amount {
+            font-size: 1.3rem;
+            line-height: 1.35;
+        }
+
+        .tx-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .tx-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f5fbfd;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            animation: slideInTx 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        .tx-item:nth-child(1) { animation-delay: 0.1s; }
+        .tx-item:nth-child(2) { animation-delay: 0.2s; }
+        .tx-item:nth-child(3) { animation-delay: 0.3s; }
+        .tx-item:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideInTx {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .tx-item:hover {
+            transform: scale(1.02);
+            background: #ecfeff;
+        }
+
+        .tx-item .tag {
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+        .tag.invoice {
+            background: #e0f2fe;
+            color: #075985;
+        }
+        .tag.letter {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .tx-item .reason {
+            color: var(--text-muted);
+            flex: 1;
+            margin: 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tx-item .tx-amount {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .mockup-footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.6rem;
+            color: #aaa;
+            padding-top: 8px;
+        }
+
+        .scroll-hint {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* Disable hover transforms on touch devices to avoid sticky states */
+        @media (hover: none) {
+            .btn-primary:hover,
+            .btn-outline:hover {
+                transform: none;
+            }
+            .feature-card:hover {
+                transform: none;
+            }
+            .phone-mockup:hover {
+                transform: none;
+            }
+            .btn:active {
+                transform: scale(0.96);
+                opacity: 0.9;
+            }
+            .feature-card:active {
+                transform: scale(0.98);
+                border-color: var(--primary);
+            }
+        }
+
+        /* ---------- FEATURES ---------- */
+        .features {
+            padding: 80px 0;
+            background: #fff;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 48px;
+            letter-spacing: -0.5px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: var(--bg);
+            padding: 32px 24px;
+            border-radius: var(--radius);
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid transparent;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            display: inline-block;
+            transition: transform 0.5s;
+        }
+        .feature-card:hover .feature-icon {
+            transform: scale(1.2) rotate(-5deg);
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* ---------- DOWNLOAD CTA ---------- */
+        .download-cta {
+            padding: 80px 0;
+            background: var(--primary);
+            color: #fff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .download-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1), transparent 70%);
+            animation: shimmerBg 8s ease-in-out infinite;
+        }
+        @keyframes shimmerBg {
+            0%, 100% { transform: translateX(-30%) scale(1); }
+            50% { transform: translateX(30%) scale(1.2); }
+        }
+
+        .download-cta h2 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .download-cta p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+        .download-cta .btn {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 1;
+        }
+        .download-cta .btn:hover {
+            background: #f0feff;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+        }
+
+        /* ---------- FOOTER ---------- */
+        .footer {
+            padding: 48px 0 32px;
+            background: #eff6f8;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .footer-brand .logo {
+            font-size: 1.5rem;
+        }
+        .footer-brand p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        .footer-email {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .footer-email:hover {
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+        .footer-bottom {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+
+        /* Tablet */
+        @media (max-width: 900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 40px;
+            }
+            .hero {
+                padding: 40px 0 60px;
+            }
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+            .hero p.sub {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .hero-actions {
+                justify-content: center;
+            }
+            .mockup-wrapper {
+                order: -1;
+            }
+            .phone-mockup {
+                width: 260px;
+                height: 520px;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .download-cta h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .nav-content {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: nowrap;
+                gap: 8px;
+            }
+            .logo {
+                font-size: 1.4rem;
+            }
+            .lang-btn {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+
+            .hero {
+                padding: 32px 0 48px;
+            }
+            .hero h1 {
+                font-size: 1.85rem;
+                letter-spacing: -0.5px;
+                line-height: 1.2;
+            }
+            .hero p.sub {
+                font-size: 1rem;
+            }
+            .hero-badge {
+                font-size: 0.8rem;
+                padding: 6px 16px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+                padding: 14px 24px;
+                font-size: 0.95rem;
+            }
+            .btn-large {
+                padding: 16px 24px;
+                font-size: 1rem;
+            }
+
+            .phone-mockup {
+                width: 200px;
+                height: 400px;
+                border-radius: 36px;
+                padding: 10px;
+            }
+            .phone-screen {
+                border-radius: 28px;
+                padding: 12px 10px;
+            }
+            .balance-box .amount {
+                font-size: 1.4rem;
+            }
+            .balance-box .doc-amount {
+                font-size: 1.05rem;
+            }
+            .tx-item {
+                padding: 8px 10px;
+                font-size: 0.78rem;
+            }
+            .tx-item .tag {
+                font-size: 0.62rem;
+                padding: 2px 8px;
+            }
+
+            .features {
+                padding: 60px 0;
+            }
+            .section-title {
+                font-size: 1.7rem;
+                margin-bottom: 32px;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .feature-card {
+                padding: 24px 20px;
+            }
+            .feature-icon {
+                font-size: 2.4rem;
+            }
+
+            .download-cta {
+                padding: 60px 0;
+            }
+            .download-cta h2 {
+                font-size: 1.7rem;
+            }
+            .download-cta p {
+                font-size: 1rem;
+            }
+
+            .footer {
+                padding: 36px 0 24px;
+            }
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .footer-email {
+                font-size: 0.9rem;
+            }
+
+            .blob-1 { width: 180px; height: 180px; }
+            .blob-2 { width: 140px; height: 140px; }
+            .blob-3 { width: 110px; height: 110px; }
+        }
+
+        @media (max-width: 360px) {
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+            .phone-mockup {
+                width: 175px;
+                height: 360px;
+            }
+            .logo {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* ---------- PRINT STYLES ---------- */
+        @media print {
+            .hero-blobs { display: none; }
+            .navbar { position: relative; background: #fff; }
+            .phone-mockup { animation: none; box-shadow: none; }
+            .download-cta { background: #0891b2 !important; }
+            .btn { border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== ANIMATED BACKGROUND ========== -->
+    <div class="hero-blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="logo" data-i18n="logo">Mesh ID<span></span></a>
+                <div class="lang-group" id="langToggle">
+                    <button class="lang-btn active" data-lang="bn">বাংলা</button>
+                    <button class="lang-btn" data-lang="en">English</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <div class="hero-badge hero-anim">
+                        <span class="badge-dot"></span>
+                        <span data-i18n="badge">ইনভয়েস ও ধন্যবাদ পত্র</span>
+                    </div>
+                    <h1 class="hero-anim" data-i18n="heroTitle">
+                        <span>Mesh ID</span> · ইনভয়েস <br />আর ধন্যবাদ পত্র, <br />সেকেন্ডেই তৈরি
+                    </h1>
+                    <p class="sub hero-anim hero-anim-delay-1" data-i18n="heroSub">
+                        যেকোনো ক্লায়েন্টের জন্য ইনভয়েস ও Thank You Letter তৈরি করুন,
+                        নিজের মতো কাস্টমাইজ করুন, আর অ্যাপেই সংরক্ষণ করুন।
+                    </p>
+                    <div class="hero-actions hero-anim hero-anim-delay-2">
+                        <a href="apps/meshid.apk" download class="btn btn-primary" id="downloadBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            <span data-i18n="downloadBtn">Android ডাউনলোড</span>
+                        </a>
+                        <a href="#features" class="btn btn-outline" data-i18n="featuresBtn">ফিচার দেখুন</a>
+                    </div>
+                </div>
+
+                <!-- Phone Mockup -->
+                <div class="mockup-wrapper hero-anim hero-anim-delay-3">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="app-header-bar">
+                                <span class="app-name" data-i18n="appName">Mesh ID</span>
+                                <span class="app-sub" data-i18n="appSub">ইনভয়েস ও লেটার</span>
+                            </div>
+                            <div class="balance-box">
+                                <span class="balance-label" data-i18n="docLabel">নতুন ডকুমেন্ট</span>
+                                <div class="amount doc-amount" data-i18n="docAction">ইনভয়েস তৈরি করুন</div>
+                            </div>
+                            <div class="tx-list" id="mockTxList">
+                                <div class="tx-item">
+                                    <span class="tag invoice" data-i18n="invTag">ইনভয়েস</span>
+                                    <span class="reason" data-i18n="doc1Title">INV-2026-001</span>
+                                    <span class="tx-amount" data-i18n="doc1Amount">৳ ৫,০০০</span>
+                                </div>
+                                <div class="tx-item">
+                                    <span class="tag letter" data-i18n="letterTag">ধন্যবাদ পত্র</span>
+                                    <span class="reason" data-i18n="doc2Title">ক্লায়েন্ট: রাফি</span>
+                                    <span class="tx-amount" data-i18n="doc2Amount">পাঠানো</span>
+                                </div>
+                                <div class="tx-item">
+                                    <span class="tag invoice" data-i18n="invTag">ইনভয়েস</span>
+                                    <span class="reason" data-i18n="doc3Title">INV-2026-002</span>
+                                    <span class="tx-amount" data-i18n="doc3Amount">৳ ৩,২০০</span>
+                                </div>
+                                <div class="tx-item">
+                                    <span class="tag letter" data-i18n="letterTag">ধন্যবাদ পত্র</span>
+                                    <span class="reason" data-i18n="doc4Title">ক্লায়েন্ট: সাদিয়া</span>
+                                    <span class="tx-amount" data-i18n="doc4Amount">সংরক্ষিত</span>
+                                </div>
+                            </div>
+                            <div class="mockup-footer">
+                                <span data-i18n="mockFooter">সব ডকুমেন্ট দেখুন</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hint">↓ <span data-i18n="scrollHint">স্ক্রল করুন</span></div>
+        </div>
+    </section>
+
+    <!-- ========== FEATURES ========== -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title" data-i18n="featuresTitle">কেন <span style="color:var(--primary);">Mesh ID</span> ব্যবহার করবেন?</h2>
+            <div class="features-grid" id="featuresGrid">
+                <div class="feature-card" data-delay="0">
+                    <div class="feature-icon">🧾</div>
+                    <h3 data-i18n="f1Title">ইনভয়েস জেনারেটর</h3>
+                    <p data-i18n="f1Desc">ক্লায়েন্ট, আইটেম ও মূল্য দিয়ে মুহূর্তেই প্রফেশনাল ইনভয়েস তৈরি করুন।</p>
+                </div>
+                <div class="feature-card" data-delay="100">
+                    <div class="feature-icon">💌</div>
+                    <h3 data-i18n="f2Title">ধন্যবাদ পত্র</h3>
+                    <p data-i18n="f2Desc">পেমেন্টের পরে কাস্টমাইজড Thank You Letter তৈরি ও সংরক্ষণ করুন।</p>
+                </div>
+                <div class="feature-card" data-delay="200">
+                    <div class="feature-icon">✏️</div>
+                    <h3 data-i18n="f3Title">সম্পূর্ণ কাস্টমাইজযোগ্য</h3>
+                    <p data-i18n="f3Desc">লোগো, নাম, ঠিকানা, শর্তাবলি ও ভাষা — সব নিজের মতো সাজান।</p>
+                </div>
+                <div class="feature-card" data-delay="300">
+                    <div class="feature-icon">📁</div>
+                    <h3 data-i18n="f4Title">অ্যাপেই সংরক্ষিত</h3>
+                    <p data-i18n="f4Desc">সব ইনভয়েস ও লেটার ডিভাইসেই সেভ থাকে, পরে আবার দেখুন বা শেয়ার করুন।</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== DOWNLOAD CTA ========== -->
+    <section class="download-cta">
+        <div class="container">
+            <h2 data-i18n="ctaTitle">আজই <span style="color:#fcd34d;">Mesh ID</span> শুরু করুন</h2>
+            <p data-i18n="ctaSub">ইনভয়েস আর ধন্যবাদ পত্র — দুটোই এক অ্যাপে, ঝামেলাহীন।</p>
+            <a href="app/meshid.apk" download class="btn btn-large" id="downloadBtn2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span data-i18n="ctaBtn">Android এর জন্য ডাউনলোড</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#" class="logo" data-i18n="footerLogo">Mesh ID<span>.</span></a>
+                    <p data-i18n="footerTag">ইনভয়েস ও ধন্যবাদ পত্র, এক অ্যাপেই।</p>
+                </div>
+                <a href="mailto:ah27042008@gmail.com" class="footer-email">
+                    ✉️ ah27042008@gmail.com
+                </a>
+            </div>
+            <div class="footer-bottom">
+                <p data-i18n="footerCopyright">&copy; 2026 Mesh ID. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPT ========== -->
+    <script>
+        (function() {
+            // ----- i18n dictionary -----
+            const dict = {
+                bn: {
+                    pageTitle: 'Mesh ID',
+                    logo: 'Mesh ID<span></span>',
+                    badge: 'ইনভয়েস ও ধন্যবাদ পত্র',
+                    heroTitle: '<span>Mesh ID</span> · ইনভয়েস <br />আর ধন্যবাদ পত্র, <br />সেকেন্ডেই তৈরি',
+                    heroSub: 'যেকোনো ক্লায়েন্টের জন্য ইনভয়েস ও Thank You Letter তৈরি করুন, নিজের মতো কাস্টমাইজ করুন, আর অ্যাপেই সংরক্ষণ করুন।',
+                    downloadBtn: 'Android ডাউনলোড',
+                    featuresBtn: 'ফিচার দেখুন',
+                    appName: 'Mesh ID',
+                    appSub: 'ইনভয়েস ও লেটার',
+                    docLabel: 'নতুন ডকুমেন্ট',
+                    docAction: 'ইনভয়েস তৈরি করুন',
+                    invTag: 'ইনভয়েস',
+                    letterTag: 'ধন্যবাদ পত্র',
+                    doc1Title: 'INV-2026-001',
+                    doc1Amount: '৳ ৫,০০০',
+                    doc2Title: 'ক্লায়েন্ট: রাফি',
+                    doc2Amount: 'পাঠানো',
+                    doc3Title: 'INV-2026-002',
+                    doc3Amount: '৳ ৩,২০০',
+                    doc4Title: 'ক্লায়েন্ট: সাদিয়া',
+                    doc4Amount: 'সংরক্ষিত',
+                    mockFooter: 'সব ডকুমেন্ট দেখুন',
+                    scrollHint: 'স্ক্রল করুন',
+                    featuresTitle: 'কেন <span style="color:var(--primary);">Mesh ID</span> ব্যবহার করবেন?',
+                    f1Title: 'ইনভয়েস জেনারেটর',
+                    f1Desc: 'ক্লায়েন্ট, আইটেম ও মূল্য দিয়ে মুহূর্তেই প্রফেশনাল ইনভয়েস তৈরি করুন।',
+                    f2Title: 'ধন্যবাদ পত্র',
+                    f2Desc: 'পেমেন্টের পরে কাস্টমাইজড Thank You Letter তৈরি ও সংরক্ষণ করুন।',
+                    f3Title: 'সম্পূর্ণ কাস্টমাইজযোগ্য',
+                    f3Desc: 'লোগো, নাম, ঠিকানা, শর্তাবলি ও ভাষা — সব নিজের মতো সাজান।',
+                    f4Title: 'অ্যাপেই সংরক্ষিত',
+                    f4Desc: 'সব ইনভয়েস ও লেটার ডিভাইসেই সেভ থাকে, পরে আবার দেখুন বা শেয়ার করুন।',
+                    ctaTitle: 'আজই <span style="color:#fcd34d;">Mesh ID</span> শুরু করুন',
+                    ctaSub: 'ইনভয়েস আর ধন্যবাদ পত্র — দুটোই এক অ্যাপে, ঝামেলাহীন।',
+                    ctaBtn: 'Android এর জন্য ডাউনলোড',
+                    footerLogo: 'Mesh ID<span></span>',
+                    footerTag: 'ইনভয়েস ও ধন্যবাদ পত্র, এক অ্যাপেই।',
+                    footerCopyright: '© 2026 Mesh ID. All rights reserved.'
+                },
+                en: {
+                    pageTitle: 'Mesh ID',
+                    logo: 'Mesh ID<span></span>',
+                    badge: 'Invoice & Thank You Letter',
+                    heroTitle: '<span>Mesh ID</span> · Invoices <br />and Thank You <br />Letters in Seconds',
+                    heroSub: 'Create, customize and store professional invoices and thank you letters for every client — right inside the app.',
+                    downloadBtn: 'Download for Android',
+                    featuresBtn: 'See Features',
+                    appName: 'Mesh ID',
+                    appSub: 'Invoice & Letter',
+                    docLabel: 'New document',
+                    docAction: 'Create an invoice',
+                    invTag: 'Invoice',
+                    letterTag: 'Thank You',
+                    doc1Title: 'INV-2026-001',
+                    doc1Amount: '৳ 5,000',
+                    doc2Title: 'Client: Rafi',
+                    doc2Amount: 'Sent',
+                    doc3Title: 'INV-2026-002',
+                    doc3Amount: '৳ 3,200',
+                    doc4Title: 'Client: Sadia',
+                    doc4Amount: 'Saved',
+                    mockFooter: 'View all documents',
+                    scrollHint: 'Scroll down',
+                    featuresTitle: 'Why use <span style="color:var(--primary);">Mesh ID</span>?',
+                    f1Title: 'Invoice Generator',
+                    f1Desc: 'Create a professional invoice in seconds with client, items and pricing.',
+                    f2Title: 'Thank You Letters',
+                    f2Desc: 'Create and save a personalized thank you letter after every payment.',
+                    f3Title: 'Fully Customizable',
+                    f3Desc: 'Logo, name, address, terms and language — make it truly yours.',
+                    f4Title: 'Stored in the App',
+                    f4Desc: 'All invoices and letters stay on your device — reopen or share anytime.',
+                    ctaTitle: 'Start with <span style="color:#fcd34d;">Mesh ID</span> Today',
+                    ctaSub: 'Invoices and thank you letters — both in one app, without the hassle.',
+                    ctaBtn: 'Download for Android',
+                    footerLogo: 'Mesh ID<span></span>',
+                    footerTag: 'Invoices and thank you letters, in one app.',
+                    footerCopyright: '© 2026 Mesh ID. All rights reserved.'
+                }
+            };
+
+            // keys that contain HTML (spans / <br>) and must use innerHTML
+            const htmlKeys = ['heroTitle', 'logo', 'footerLogo', 'featuresTitle', 'ctaTitle'];
+
+            const langBtns = document.querySelectorAll('.lang-btn');
+            const i18nEls = document.querySelectorAll('[data-i18n]');
+            const pageTitle = document.getElementById('pageTitle');
+
+            function setLang(lang) {
+                if (dict[lang] && dict[lang].pageTitle) {
+                    pageTitle.textContent = dict[lang].pageTitle;
+                    document.documentElement.lang = lang === 'bn' ? 'bn' : 'en';
+                }
+
+                i18nEls.forEach(el => {
+                    const key = el.dataset.i18n;
+                    if (dict[lang] && dict[lang][key]) {
+                        if (htmlKeys.includes(key)) {
+                            el.innerHTML = dict[lang][key];
+                        } else {
+                            el.textContent = dict[lang][key];
+                        }
+                    }
+                });
+
+                langBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+
+                localStorage.setItem('MeshID-lang', lang);
+            }
+
+            langBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    setLang(this.dataset.lang);
+                });
+            });
+
+            const saved = localStorage.getItem('MeshID-lang') || 'bn';
+            setLang(saved);
+
+            // ----- Intersection Observer for Feature Cards -----
+            const featureCards = document.querySelectorAll('.feature-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const delay = parseInt(entry.target.dataset.delay) || 0;
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, delay);
+                    }
+                });
+            }, {
+                threshold: 0.2,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            featureCards.forEach(card => {
+                observer.observe(card);
+            });
+
+            // Smooth anchor scroll
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#') return;
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+        })();
+    </script>
+</body>
+</html>
